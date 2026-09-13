@@ -136,7 +136,7 @@
   .route ul li { break-inside: avoid; padding: 1px 0; }
   @media (max-width: 860px) { .route ul { columns: 1; } .route { grid-template-columns: 1fr; } }
   .claim-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 12px; align-items: start; margin-top: 12px; }
-  @media (max-width: 900px) { .claim-grid { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 900px) { .claim-grid { grid-template-columns: minmax(0, 1fr); } .claim-grid > .stack:first-child { order: 2; } } @media (max-width: 640px) { .hide-sm { display: none; } .topbar { position: static; } } @media (max-width: 480px) { .hide-xs { display: none; } }
   .claim-grid > .stack { min-width: 0; }
   .photos { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
   .photo { position: relative; border: 1px solid var(--line); background: var(--surface-2); overflow: hidden; border-radius: 2px; max-width: 100%; min-width: 0; }
@@ -233,7 +233,7 @@
     </div>
   </header>
   <div class="banner" id="banner" hidden></div>
-  <main id="main"></main>
+  <main id="main"><noscript><div class="notice warn" style="margin:24px auto;max-width:640px"><b>This prototype needs JavaScript.</b> Open the file in Chrome, Edge, Safari or Firefox on a computer (double-click it). Mail and file previews show only this frame.</div></noscript><div id="preload" class="notice" style="margin:24px auto;max-width:640px">Loading the claims queue… If this message stays, the file was opened in a preview that does not run scripts: open it in a desktop browser instead.</div></main>
   <div id="backdrop" class="backdrop" hidden></div>
   <aside id="drawer" class="drawer" hidden aria-label="Panel"></aside>
   <div id="toast" class="toast" hidden></div>
@@ -585,8 +585,8 @@
   }
   function queueTable(rows) {
     if (!rows.length) return '<div class="empty">No claims match.</div>';
-    return '<div class="table-wrap"><table class="table"><thead><tr><th>Claim</th><th>Policyholder</th><th>Vehicle</th><th>Reported</th><th>Lane</th><th>Routing</th><th class="r">Estimate</th><th class="r">Min. conf.</th><th>Status</th><th>Owner</th></tr></thead><tbody>'
-      + rows.map((c) => { const f = c.assessment.findings; const minC = f.length ? Math.min(...f.map((x) => x.confidence)) : null; return '<tr class="click l-' + c.route.lane + '" data-open="' + esc(c.id) + '"><td class="mono lane-cell">' + esc(c.id) + '</td><td>' + esc(c.holder || '—') + '</td><td>' + esc(vehicleStr(c.vehicle) || '—') + '</td><td><span class="num">' + esc(fmtTs(c.createdAt)) + '</span> <span class="muted small">· ' + ageOf(c.createdAt) + '</span></td><td>' + laneChip(c.route.lane) + '</td><td class="reason wrap">' + esc(c.route.reasons[0] || '') + (c.route.reasons.length > 1 ? ' <span class="muted">+' + (c.route.reasons.length - 1) + '</span>' : '') + '</td><td class="r mono">' + (c.estimate.lines.length ? money(c.estimate.total) : '—') + '</td><td class="r mono">' + (minC == null ? '—' : pct(minC)) + '</td><td>' + statusChip(c) + '</td><td>' + esc(ownerOf(c)) + '</td></tr>'; }).join('')
+    return '<div class="table-wrap"><table class="table"><thead><tr><th>Claim</th><th class="hide-sm">Policyholder</th><th class="hide-xs">Vehicle</th><th class="hide-sm">Reported</th><th>Lane</th><th class="hide-sm">Routing</th><th class="r">Estimate</th><th class="r hide-sm">Min. conf.</th><th>Status</th><th class="hide-sm">Owner</th></tr></thead><tbody>'
+      + rows.map((c) => { const f = c.assessment.findings; const minC = f.length ? Math.min(...f.map((x) => x.confidence)) : null; return '<tr class="click l-' + c.route.lane + '" data-open="' + esc(c.id) + '"><td class="mono lane-cell">' + esc(c.id) + '</td><td class="hide-sm">' + esc(c.holder || '—') + '</td><td class="hide-xs">' + esc(vehicleStr(c.vehicle) || '—') + '</td><td class="hide-sm"><span class="num">' + esc(fmtTs(c.createdAt)) + '</span> <span class="muted small">· ' + ageOf(c.createdAt) + '</span></td><td>' + laneChip(c.route.lane) + '</td><td class="reason wrap hide-sm">' + esc(c.route.reasons[0] || '') + (c.route.reasons.length > 1 ? ' <span class="muted">+' + (c.route.reasons.length - 1) + '</span>' : '') + '</td><td class="r mono">' + (c.estimate.lines.length ? money(c.estimate.total) : '—') + '</td><td class="r mono hide-sm">' + (minC == null ? '—' : pct(minC)) + '</td><td>' + statusChip(c) + '</td><td class="hide-sm">' + esc(ownerOf(c)) + '</td></tr>'; }).join('')
       + '</tbody></table></div>';
   }
   function bindQueue() {
